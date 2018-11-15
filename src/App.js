@@ -78,6 +78,7 @@ class App extends Component {
         > Change title</button> */}
 
         <button
+          className={"appButton"}
           onClick={this.toggleCarsHandler}
         > Toggle cars</button>
 
