@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import './App.scss';
 import Car from './Car/Car';
 
 const carYear = Math.round(Math.random()*100);
