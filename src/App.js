@@ -1,19 +1,27 @@
 import React, { Component } from 'react';
 import './App.scss';
 import Car from './Car/Car';
-
+import ErrorBoundary from './ErrorBoundary/ErrorBoundary'
+import Counter from './Counter/Counter'
 const carYear = Math.round(Math.random()*100);
+
+export const ClickedContext = React.createContext(false)
 
 class App extends Component {
 
-  state = {
-    cars: [
-      {name: 'Ford', year: "19" + Math.round(Math.random()*100)},
-      {name: 'Audi', year: "19" + Math.round(Math.random()*100)},
-      {name: 'Mazda', year: "19" + carYear}
-    ],
-    pageTitle: 'React Car Shop',
-    showCars: false
+  constructor(props) {  
+    super(props)
+
+    this.state = {
+      cars: [
+        {name: 'Ford', year: "19" + Math.round(Math.random()*100)},
+        {name: 'Audi', year: "19" + Math.round(Math.random()*100)},
+        {name: 'Mazda', year: "19" + carYear}
+      ],
+      pageTitle: 'React Car Shop',
+      showCars: false,
+      clicked: false
+    }
   }
 
   toggleCarsHandler = () => {
@@ -45,25 +53,42 @@ class App extends Component {
     this.setState({cars}) 
   }
 
+  componentWillMount() {
+    console.log('App componentWillMount')
+  }
+
+  componentDidMount() {
+    console.log('App componentDidMount')
+  }
+
   render() { 
+    console.log('App Render')
+    
     const divStyle = {
       'textAlign': 'center'
+
     }
 
-    // let cars = null
+    let cars = null
 
-    // if (this.state.showCars) {
-    //   cars = this.state.cars.map((car, index) => {
-    //     return (
-    //       <Car 
-    //         key={index }
-    //         name={car.name}
-    //         year={car.year}
-    //         onChangeTitle={() => this.changeTitleHandler(car.name)}
-    //       />
-    //     )
-    //   })
-    // }
+    if (this.state.showCars) {
+      cars = this.state.cars.map((car, index) => {
+        return (
+          <ErrorBoundary key={index}>
+          <Car 
+            name={car.name}
+            year={car.year}
+            onDelete={this.deleteHandler.bind(this, index)}
+            index={index}
+            onChangeName={event => this.onChangeName(event.target.value, index)}
+            style={{
+              display: 'inline-block'
+            }}
+          />
+          </ErrorBoundary>
+        )
+      })
+    }
 
     // const cars = this.state.cars
 
@@ -71,36 +96,42 @@ class App extends Component {
       <div className="App" style={divStyle}>
         <h1> {this.state.pageTitle} {this.props.title} </h1>
 
+        <ClickedContext.Provider value='{this.state.clicked}'>
+        <Counter />
+        </ClickedContext.Provider>
+
+      
+      <hr/>
         <input type="text" onChange={this.handleInput}/>
 
-        {/* <button 
-          onClick={this.changeTitleHandler.bind(this, 'Changed!')}
-        > Change title</button> */}
+        <button 
+          onClick={()=> this.setState({clicked:true})}
+        > Change clicked</button>
 
         <button
           className={"appButton"}
           onClick={this.toggleCarsHandler}
         > Toggle cars</button>
 
-        <div srtyle={{
+        <div style={{
           width: 400, 
           margin: 'auto',
-          paddingTop: '20px'
+          paddingTop: '20px',
         }}>
           { 
-            // cars
-            this.state.showCars ?
-              this.state.cars.map((car, index) => {
-                return (
-                  <Car 
-                    key={index }
-                    name={car.name}
-                    year={car.year}
-                    onDelete={this.deleteHandler.bind(this, index)}
-                    onChangeName={event => this.onChangeName(event.target.value, index)}
-                  />
-                )
-              }) : null
+            cars
+            // this.state.showCars ?
+            //   this.state.cars.map((car, index) => {
+            //     return (
+            //       <Car 
+            //         key={index }
+            //         name={car.name}
+            //         year={car.year}
+            //         onDelete={this.deleteHandler.bind(this, index)}
+            //         onChangeName={event => this.onChangeName(event.target.value, index)}
+            //       />
+            //     )
+            //   }) : null
           }
         </div>
 
